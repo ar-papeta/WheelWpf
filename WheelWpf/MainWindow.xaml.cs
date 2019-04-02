@@ -15,10 +15,22 @@ namespace WheelWpf
         public short ZAxis { get; set; }   //Velocity
         public short RzAxis { get; set; }  //Reversal
 
-        public bool back { get; set; }      
-        public short velocityC { get; set; }  
-        public bool front { get; set; }
-        
+            
+        public short velocityC { get; set; }
+        public short velocityTurn { get; set; }
+
+        public bool WheelsEn { get; set; }
+
+        public bool Wheel1Dir { get; set; }
+        public bool Wheel2Dir { get; set; }
+        public bool Wheel3Dir { get; set; }
+        public bool Wheel4Dir { get; set; }
+
+        public short Wheel1Speed { get; set; }
+        public short Wheel2Speed { get; set; }
+        public short Wheel3Speed { get; set; }
+        public short Wheel4Speed { get; set; }
+
 
         public int connectionResult;
         
@@ -69,11 +81,19 @@ namespace WheelWpf
                 {
                     client.ConnectTo("192.168.49.2", 0, 1);
                     ProcessingJoyData(Convert.ToInt16(j.X), Convert.ToInt16(j.Y),Convert.ToInt16(j.Z),Convert.ToInt16(j.Rz));
-                    var writeBuffer = new byte[2];
+                    var writeBuffer = new byte[10];
                     //YAxis = Convert.ToInt16(j.Y);
                     textBlock5.Text = YAxis.ToString();
                     //short Y = Convert.ToInt16(j.Y.ToString());
-                    S7.SetIntAt(writeBuffer, 0, YAxis);           
+                    S7.SetBitAt(ref writeBuffer, 0,0, WheelsEn);
+                    S7.SetBitAt(ref writeBuffer, 0,1, Wheel1Dir);
+                    S7.SetBitAt(ref writeBuffer, 0,2, Wheel2Dir);
+                    S7.SetBitAt(ref writeBuffer, 0,3, Wheel3Dir);
+                    S7.SetBitAt(ref writeBuffer, 0,4, Wheel4Dir);
+                    S7.SetIntAt(writeBuffer, 2, Wheel1Speed);
+                    S7.SetIntAt(writeBuffer, 4, Wheel2Speed);
+                    S7.SetIntAt(writeBuffer, 6, Wheel3Speed);
+                    S7.SetIntAt(writeBuffer, 8, Wheel4Speed);
                     client.DBWrite(15211, 0, writeBuffer.Length, writeBuffer);
                     //client.Disconnect();
                 }
@@ -158,21 +178,118 @@ namespace WheelWpf
         void ProcessingJoyData(short LeftRight, short ForwardBack, short velocityCoef, short Reversal)
         {
             //Console.WriteLine("ss");           
-            YAxis = ForwardBack;
-            if (ForwardBack <= 40)
+            //YAxis = ForwardBack;
+            if (ForwardBack <= 40)  //move forward case
             {
-                front = true;
-                back = false;
-                velocityC = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack))/40);               
+                WheelsEn = true;
+
+                Wheel1Dir = true;
+                Wheel2Dir = true;
+                Wheel3Dir = true;
+                Wheel4Dir = true;
+                
+                if (LeftRight <= 40)  //move forward-left case 
+                {
+                    Wheel1Speed = Convert.ToInt16((((100 - velocityCoef) * (40 - ForwardBack)) / 40) * (((LeftRight - 0) * (10-3) / (40 - 0) + 3))/10);
+                    Wheel2Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);
+                    Wheel3Speed = Convert.ToInt16((((100 - velocityCoef) * (40 - ForwardBack)) / 40) * (((LeftRight - 0) * (10 - 3) / (40 - 0) + 3)) / 10);
+                    Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);                   
+                }
+                if (LeftRight > 40 && LeftRight <60) //move forward-only case 
+                {
+                    Wheel1Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);
+                    Wheel2Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);
+                    Wheel3Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);
+                    Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);                 
+                }
+                if (LeftRight >= 60) //move forward-right case 
+                {
+                    Wheel1Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);
+                    Wheel2Speed = Convert.ToInt16((((100 - velocityCoef) * (40 - ForwardBack)) / 40) * (((LeftRight - 60) * (3 - 10) / (100 - 60) + 10)) / 10);
+                    Wheel3Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);
+                    Wheel4Speed = Convert.ToInt16((((100 - velocityCoef) * (40 - ForwardBack)) / 40) * (((LeftRight - 60) * (3 - 10) / (100 - 60) + 10)) / 10);                    
+                }                                          
             }
-            if (ForwardBack < 60 && ForwardBack > 40) {
-                velocityC = 0;
-            }
-            if (ForwardBack > 60 )
+
+            if (ForwardBack < 60 && ForwardBack > 40)  //do not move back or forward case
             {
-                velocityC = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack-60))/40);
+               
+                if (LeftRight > 40 && LeftRight < 60) //stop!!! 
+                {
+                    WheelsEn = false;
+                    Wheel1Speed = 0;
+                    Wheel2Speed = 0;
+                    Wheel3Speed = 0;
+                    Wheel4Speed = 0;
+                }
+                if(LeftRight <= 40)      //olny left
+                {
+                    WheelsEn = true;
+
+                    Wheel1Dir = true;
+                    Wheel2Dir = true;
+                    Wheel3Dir = false;
+                    Wheel4Dir = false;
+
+                    Wheel1Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - LeftRight)) / 40);
+                    Wheel2Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - LeftRight)) / 40);
+                    Wheel3Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - LeftRight)) / 40);
+                    Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - LeftRight)) / 40);
+                }
+                if(LeftRight >= 60)    //only right
+                {
+                    WheelsEn = true;
+
+                    Wheel1Dir = false;
+                    Wheel2Dir = false;
+                    Wheel3Dir = true;
+                    Wheel4Dir = true;
+                    
+                    Wheel1Speed = Convert.ToInt16(((100 - velocityCoef) * (LeftRight - 60)) / 40);
+                    Wheel2Speed = Convert.ToInt16(((100 - velocityCoef) * (LeftRight - 60)) / 40);
+                    Wheel3Speed = Convert.ToInt16(((100 - velocityCoef) * (LeftRight - 60)) / 40);
+                    Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (LeftRight - 60)) / 40);
+                }
             }
-            textBlock5.Text = velocityC.ToString();
+
+            if (ForwardBack >= 60 ) //move back case
+            {
+                WheelsEn = true;
+
+                Wheel1Dir = false;
+                Wheel2Dir = false;
+                Wheel3Dir = false;
+                Wheel4Dir = false;
+
+                if (LeftRight <= 40)  //move back-left case 
+                {
+                    Wheel1Speed = Convert.ToInt16((((100 - velocityCoef) * (ForwardBack - 60)) / 40) * (((LeftRight - 0) * (10 - 3) / (40 - 0) + 3)) / 10);
+                    Wheel2Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
+                    Wheel3Speed = Convert.ToInt16((((100 - velocityCoef) * (ForwardBack - 60)) / 40) * (((LeftRight - 0) * (10 - 3) / (40 - 0) + 3)) / 10);
+                    Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
+                }
+                if (LeftRight > 40 && LeftRight < 60) //move forward-only case 
+                {
+                    //WheelsEn = false;
+                    Wheel1Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
+                    Wheel2Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
+                    Wheel3Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
+                    Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
+                }
+                if (LeftRight >= 60) //move forward-right case 
+                {
+                    Wheel1Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
+                    Wheel2Speed = Convert.ToInt16((((100 - velocityCoef) * (ForwardBack - 60)) / 40) * (((LeftRight - 60) * (3 - 10) / (100 - 60) + 10)) / 10);
+                    Wheel3Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
+                    Wheel4Speed = Convert.ToInt16((((100 - velocityCoef) * (ForwardBack - 60)) / 40) * (((LeftRight - 60) * (3 - 10) / (100 - 60) + 10)) / 10);
+
+                }
+
+            }
+            textBlock5.Text = Wheel1Speed.ToString();
+            textBlock5.Text += "  ";
+            textBlock5.Text += Wheel2Speed.ToString();
+
         }
         
     }
