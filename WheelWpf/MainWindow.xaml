@@ -5,8 +5,10 @@
     <Grid>
         <Button Content="START CONNECTION" Height="23" HorizontalAlignment="Left" Margin="17,46,0,0" Name="button1" VerticalAlignment="Top" Width="123" Click="button1_Click" />
         <Label Content="Label" Height="28" HorizontalAlignment="Left" Margin="17,16,0,0" Name="label1" VerticalAlignment="Top" />
-        <TextBlock TextWrapping="Wrap" Height="Auto" HorizontalAlignment="Left" Margin="612,59,0,0" Name="textBlock1" Text="Axises" VerticalAlignment="Top" Width="101" />
+        <TextBlock TextWrapping="Wrap" Height="Auto" HorizontalAlignment="Left" Margin="698,49,0,0" Name="textBlock1" Text="Axises" FontSize="14" VerticalAlignment="Top" Width="50" />
         <TextBlock Height="Auto" HorizontalAlignment="Left" Margin="347,62,0,0" Name="textBlock2" Text="Buttons states" TextWrapping="Wrap" VerticalAlignment="Top" Width="187" />
-        <TextBlock TextWrapping="Wrap" Height="Auto" HorizontalAlignment="Left" Margin="633,16,0,0" Name="textBlock4" Text="Connection status"  VerticalAlignment="Top" Width="125" />
+        <TextBlock TextWrapping="Wrap" Height="Auto" HorizontalAlignment="Left" Margin="152,50,0,0" Name="textBlock4" Text="Connection status"  VerticalAlignment="Top" Width="112" />
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="458" Margin="686,46,0,0" VerticalAlignment="Top" Width="68"/>
+        <TextBlock HorizontalAlignment="Left" Height="23" Margin="335,135,0,0" TextWrapping="Wrap" Text="YAxis" Name="textBlock5" VerticalAlignment="Top" Width="120"/>
     </Grid>
 </Window>
