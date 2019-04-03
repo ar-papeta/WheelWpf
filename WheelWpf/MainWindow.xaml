@@ -9,7 +9,6 @@
         <TextBlock Height="Auto" HorizontalAlignment="Left" Margin="347,62,0,0" Name="textBlock2" Text="Buttons states" TextWrapping="Wrap" VerticalAlignment="Top" Width="187" />
         <TextBlock TextWrapping="Wrap" Height="Auto" HorizontalAlignment="Left" Margin="152,50,0,0" Name="textBlock4" Text="Connection status"  VerticalAlignment="Top" Width="112" />
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="458" Margin="686,46,0,0" VerticalAlignment="Top" Width="68"/>
-        <TextBlock HorizontalAlignment="Left" Height="23" Margin="335,135,0,0" TextWrapping="Wrap" Text="LOL" Name="textBlock5" VerticalAlignment="Top" Width="120"/>
         <Image Source="Resources/ua.png" HorizontalAlignment="Left" Height="23" Margin="17,481,0,0" VerticalAlignment="Top" Width="30"/>
         <TextBlock HorizontalAlignment="Left" Margin="52,483,0,0" TextWrapping="Wrap" Text="©Artem Papeta" VerticalAlignment="Top"/>
     </Grid>

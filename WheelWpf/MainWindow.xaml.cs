@@ -21,6 +21,7 @@ namespace WheelWpf
 
         public bool WheelsEn { get; set; }
 
+
         public bool Wheel1Dir { get; set; }
         public bool Wheel2Dir { get; set; }
         public bool Wheel3Dir { get; set; }
@@ -40,7 +41,7 @@ namespace WheelWpf
         }
         //MainWindow mw = new MainWindow();
         Device device;
-        S7Client client = new S7Client();                       
+        S7Client client = new S7Client(); 
         DispatcherTimer timer = new DispatcherTimer();
         
 
@@ -80,11 +81,11 @@ namespace WheelWpf
                 if (connectionResult == 0)
                 {
                     client.ConnectTo("192.168.49.2", 0, 1);
+
                     ProcessingJoyData(Convert.ToInt16(j.X), Convert.ToInt16(j.Y),Convert.ToInt16(j.Z),Convert.ToInt16(j.Rz));
+
                     var writeBuffer = new byte[10];
-                    //YAxis = Convert.ToInt16(j.Y);
-                    textBlock5.Text = YAxis.ToString();
-                    //short Y = Convert.ToInt16(j.Y.ToString());
+
                     S7.SetBitAt(ref writeBuffer, 0,0, WheelsEn);
                     S7.SetBitAt(ref writeBuffer, 0,1, Wheel1Dir);
                     S7.SetBitAt(ref writeBuffer, 0,2, Wheel2Dir);
@@ -136,13 +137,13 @@ namespace WheelWpf
             {
                 textBlock4.FontWeight = FontWeights.UltraBold;
                 textBlock4.Foreground = Brushes.Green;
-                textBlock4.Text = "PLC CONNECTED";
+                textBlock4.Text = "PLC FOUND !";
             }
             else
             {
                 textBlock4.FontWeight = FontWeights.UltraBold;
                 textBlock4.Foreground = Brushes.Red;
-                textBlock4.Text = "PLC NOT FOUND";
+                textBlock4.Text = "PLC NOT FOUND !";
             }
             //CheckConnection();
             foreach (DeviceInstance instance in Manager.GetDevices(DeviceClass.GameControl, EnumDevicesFlags.AttachedOnly))
@@ -179,7 +180,7 @@ namespace WheelWpf
         {
             //Console.WriteLine("ss");           
             //YAxis = ForwardBack;
-            if (ForwardBack <= 40)  //move forward case
+            if (ForwardBack <= 35)  //move forward case
             {
                 WheelsEn = true;
 
@@ -188,21 +189,21 @@ namespace WheelWpf
                 Wheel3Dir = true;
                 Wheel4Dir = true;
                 
-                if (LeftRight <= 40)  //move forward-left case 
+                if (LeftRight <= 35)  //move forward-left case 
                 {
                     Wheel1Speed = Convert.ToInt16((((100 - velocityCoef) * (40 - ForwardBack)) / 40) * (((LeftRight - 0) * (10-3) / (40 - 0) + 3))/10);
                     Wheel2Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);
                     Wheel3Speed = Convert.ToInt16((((100 - velocityCoef) * (40 - ForwardBack)) / 40) * (((LeftRight - 0) * (10 - 3) / (40 - 0) + 3)) / 10);
                     Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);                   
                 }
-                if (LeftRight > 40 && LeftRight <60) //move forward-only case 
+                if (LeftRight > 35 && LeftRight <65) //move forward-only case 
                 {
                     Wheel1Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);
                     Wheel2Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);
                     Wheel3Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);
                     Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);                 
                 }
-                if (LeftRight >= 60) //move forward-right case 
+                if (LeftRight >= 65) //move forward-right case 
                 {
                     Wheel1Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - ForwardBack)) / 40);
                     Wheel2Speed = Convert.ToInt16((((100 - velocityCoef) * (40 - ForwardBack)) / 40) * (((LeftRight - 60) * (3 - 10) / (100 - 60) + 10)) / 10);
@@ -211,10 +212,10 @@ namespace WheelWpf
                 }                                          
             }
 
-            if (ForwardBack < 60 && ForwardBack > 40)  //do not move back or forward case
+            if (ForwardBack < 65 && ForwardBack > 35)  //do not move back or forward case
             {
                
-                if (LeftRight > 40 && LeftRight < 60) //stop!!! 
+                if (LeftRight > 35 && LeftRight < 65) //stop!!! 
                 {
                     WheelsEn = false;
                     Wheel1Speed = 0;
@@ -222,7 +223,7 @@ namespace WheelWpf
                     Wheel3Speed = 0;
                     Wheel4Speed = 0;
                 }
-                if(LeftRight <= 40)      //olny left
+                if(LeftRight <= 35)      //olny left
                 {
                     WheelsEn = true;
 
@@ -236,7 +237,7 @@ namespace WheelWpf
                     Wheel3Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - LeftRight)) / 40);
                     Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - LeftRight)) / 40);
                 }
-                if(LeftRight >= 60)    //only right
+                if(LeftRight >= 65)    //only right
                 {
                     WheelsEn = true;
 
@@ -252,7 +253,7 @@ namespace WheelWpf
                 }
             }
 
-            if (ForwardBack >= 60 ) //move back case
+            if (ForwardBack >= 65) //move back case
             {
                 WheelsEn = true;
 
@@ -261,14 +262,14 @@ namespace WheelWpf
                 Wheel3Dir = false;
                 Wheel4Dir = false;
 
-                if (LeftRight <= 40)  //move back-left case 
+                if (LeftRight <= 35)  //move back-left case 
                 {
                     Wheel1Speed = Convert.ToInt16((((100 - velocityCoef) * (ForwardBack - 60)) / 40) * (((LeftRight - 0) * (10 - 3) / (40 - 0) + 3)) / 10);
                     Wheel2Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
                     Wheel3Speed = Convert.ToInt16((((100 - velocityCoef) * (ForwardBack - 60)) / 40) * (((LeftRight - 0) * (10 - 3) / (40 - 0) + 3)) / 10);
                     Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
                 }
-                if (LeftRight > 40 && LeftRight < 60) //move forward-only case 
+                if (LeftRight > 35 && LeftRight < 65) //move forward-only case 
                 {
                     //WheelsEn = false;
                     Wheel1Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
@@ -276,7 +277,7 @@ namespace WheelWpf
                     Wheel3Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
                     Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
                 }
-                if (LeftRight >= 60) //move forward-right case 
+                if (LeftRight >= 65) //move forward-right case 
                 {
                     Wheel1Speed = Convert.ToInt16(((100 - velocityCoef) * (ForwardBack - 60)) / 40);
                     Wheel2Speed = Convert.ToInt16((((100 - velocityCoef) * (ForwardBack - 60)) / 40) * (((LeftRight - 60) * (3 - 10) / (100 - 60) + 10)) / 10);
@@ -286,9 +287,6 @@ namespace WheelWpf
                 }
 
             }
-            textBlock5.Text = Wheel1Speed.ToString();
-            textBlock5.Text += "  ";
-            textBlock5.Text += Wheel2Speed.ToString();
 
         }
         
