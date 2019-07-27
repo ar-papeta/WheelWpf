@@ -14,15 +14,15 @@
         <Button Content="START CONNECTION" Height="23" HorizontalAlignment="Left" Margin="7,150,0,0" Name="button1" VerticalAlignment="Top" Width="142" Click="button1_Click" Grid.ColumnSpan="2" />
         <Label Content="Joystick" Height="34" HorizontalAlignment="Left" Margin="53,33,0,0" Name="label1" VerticalAlignment="Top" Grid.ColumnSpan="2" />
         <TextBlock TextWrapping="Wrap" Height="Auto" HorizontalAlignment="Left" Margin="637.782,49,0,0" Name="textBlock1" Text="Axises" FontSize="14" VerticalAlignment="Top" Width="50" Grid.Column="1" />
-        <TextBlock Height="Auto" HorizontalAlignment="Left" Margin="542.782,51,0,0" Name="textBlock2" Text="Buttons states" TextWrapping="Wrap" VerticalAlignment="Top" Width="78" Grid.Column="1" />
-        <TextBlock TextWrapping="Wrap" Height="Auto" HorizontalAlignment="Left" Margin="105.782,142,0,0" Name="textBlock4"  VerticalAlignment="Top" Width="112" Grid.Column="1" />
+        <TextBlock Height="Auto" HorizontalAlignment="Left" Margin="542.782,72,0,0" Name="textBlock2" Text="Buttons states" TextWrapping="Wrap" VerticalAlignment="Top" Width="78" Grid.Column="1" />
+        <TextBlock TextWrapping="Wrap" Height="Auto" HorizontalAlignment="Left" Margin="102.782,153,0,0" Name="textBlock4"  VerticalAlignment="Top" Width="112" Grid.Column="1" />
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="458" Margin="625.782,46,0,0" VerticalAlignment="Top" Width="68" Grid.Column="1"/>
         <Image Source="Resources/ua.png" HorizontalAlignment="Left" Height="23" Margin="17,481,0,0" VerticalAlignment="Top" Width="30"/>
         <TextBlock HorizontalAlignment="Left" Margin="52,483,0,0" TextWrapping="Wrap" Text="©Artem Papeta :)" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
         <Rectangle Name="LifeBitBlock" Fill="#FF0000" HorizontalAlignment="Left" Height="25" Margin="665.782,10,0,0" Stroke="Black" VerticalAlignment="Top" Width="25" Grid.Column="1"/>
         <Label Content="LiFe Bit" HorizontalAlignment="Left" Margin="616.782,10,0,0" VerticalAlignment="Top" Grid.Column="1"/>
         <Image Source="Resources/Joy_32.png" HorizontalAlignment="Left" Height="34" Margin="16,33,0,0" VerticalAlignment="Top" Width="31"/>
-        <Image Source="Resources/J_logo.png" Grid.Column="1" HorizontalAlignment="Left" Height="192" Margin="200.782,179,0,0" VerticalAlignment="Top" Width="269"/>
+        <Image Source="Resources/J_logo.png" Grid.Column="1" HorizontalAlignment="Left" Height="192" Margin="170.782,195,0,0" VerticalAlignment="Top" Width="269"/>
         <TextBox Grid.ColumnSpan="2" Name="IptextBox" HorizontalAlignment="Left" Height="20" Margin="59,100,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="99" LostFocus="IpTextBox_Deactive"  TextChanged="IpTextBox_TextChanged"/>
         <TextBlock HorizontalAlignment="Left" Margin="25,102,0,0" TextWrapping="Wrap" Text="PLC IP" VerticalAlignment="Top"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="109.782,102,0,0" TextWrapping="Wrap" Text="Rack" VerticalAlignment="Top"/>
@@ -30,9 +30,11 @@
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="170.782,102,0,0" TextWrapping="Wrap" Text="Slot" VerticalAlignment="Top"/>
         <TextBox Name="SlotTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="20" Margin="194.782,100,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="22" TextAlignment="Center" TextChanged="SlotTextBox_TextChanged"/>
         <TextBlock HorizontalAlignment="Left" Margin="4,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="48" FontWeight="Bold" FontSize="14"><Run FontStyle="Italic" Text="current"/><Run Text=" "/><Run Foreground="Green" FontFamily="Consolas" Text=" "/></TextBlock>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="458" Margin="537.782,46,0,0" VerticalAlignment="Top" Width="88" Grid.Column="1"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="436" Margin="537.782,68,0,0" VerticalAlignment="Top" Width="88" Grid.Column="1"/>
         <TextBlock Name="CurrentIpTextBlock" HorizontalAlignment="Left" Margin="56,125,0,0" TextAlignment="Center" TextWrapping="Wrap" Text="" Foreground="Green" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="108" FontStyle="Italic" FontWeight="Bold" FontSize="14"/>
         <TextBlock Name="CurrentRackTextBlock" HorizontalAlignment="Left" Margin="137.782,125,0,0" TextAlignment="Center" TextWrapping="Wrap" Text="" Foreground="Green" VerticalAlignment="Top" Width="22" Grid.Column="1" Height="20" FontWeight="Bold" FontSize="14"/>
         <TextBlock x:Name="CurrentSlotTextBlock" HorizontalAlignment="Left" Margin="194.782,125,0,0" TextAlignment="Center" TextWrapping="Wrap" Text="" Foreground="Green" VerticalAlignment="Top" Width="22" Grid.Column="1" Height="20" FontSize="14" FontWeight="Bold"/>
+        <Label Content="Buttons" Grid.Column="1" HorizontalAlignment="Left" Margin="555.782,41,0,0" VerticalAlignment="Top"/>
+        <Button Grid.ColumnSpan="2" Content="Camera view" HorizontalAlignment="Left" Height="36" Margin="17,426,0,0" VerticalAlignment="Top" Width="128" Click="Button_Click"/>
     </Grid>
 </Window>
