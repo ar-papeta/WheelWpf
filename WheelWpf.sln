@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WheelWpf", "WheelWpf\WheelW
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sharp7", "ClassLibrary1\Sharp7.csproj", "{6DE55CFF-5800-472A-9771-711E39A10C01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AForge.Wpf.IpCamera", "..\AForge.Wpf.IpCamera\AForge.Wpf.IpCamera.csproj", "{117FF6C7-A989-4B76-8646-5FFDE28A0FDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{6DE55CFF-5800-472A-9771-711E39A10C01}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6DE55CFF-5800-472A-9771-711E39A10C01}.Release|x86.ActiveCfg = Release|Any CPU
 		{6DE55CFF-5800-472A-9771-711E39A10C01}.Release|x86.Build.0 = Release|Any CPU
+		{117FF6C7-A989-4B76-8646-5FFDE28A0FDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{117FF6C7-A989-4B76-8646-5FFDE28A0FDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{117FF6C7-A989-4B76-8646-5FFDE28A0FDB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{117FF6C7-A989-4B76-8646-5FFDE28A0FDB}.Debug|x86.Build.0 = Debug|Any CPU
+		{117FF6C7-A989-4B76-8646-5FFDE28A0FDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{117FF6C7-A989-4B76-8646-5FFDE28A0FDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{117FF6C7-A989-4B76-8646-5FFDE28A0FDB}.Release|x86.ActiveCfg = Release|Any CPU
+		{117FF6C7-A989-4B76-8646-5FFDE28A0FDB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

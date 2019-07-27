@@ -8,11 +8,14 @@ using System.Net;
 using System.Windows.Controls;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Diagnostics;
 
 namespace WheelWpf
 {
     public partial class MainWindow : Window 
-    {        
+    {
+        public byte[] buttons;
+        public bool[] boolButtons;
         public short XAxis { get; set; }   //Right & Left
         public short YAxis { get; set; }   //Front & back
         public short ZAxis { get; set; }   //Velocity
@@ -60,11 +63,18 @@ namespace WheelWpf
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            RefreshConnectionData();
-            CheckConnection();
-            timer.Tick += new EventHandler(timer_Tick);
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 10);
-            timer.Start();
+            try
+            {
+                RefreshConnectionData();
+                CheckConnection();
+                timer.Tick += new EventHandler(timer_Tick);
+                timer.Interval = new TimeSpan(0, 0, 0, 0, 10);
+                timer.Start();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("PLC Connection abborded" + ex.Message);
+            }
         }
 
         //full ip validation
@@ -133,13 +143,18 @@ namespace WheelWpf
                 JoystickState j = device.CurrentJoystickState;
                     
                 string info = "";
-                byte[] buttons = j.GetButtons();
+                buttons = j.GetButtons();
+                boolButtons = new bool[buttons.Length];
                 for (int i = 0; i < buttons.Length; i++)
                 {
                     if (buttons[i] != 0)
                     {
-                        info += "Button: " + i + " ";
+                        //info += "Button: " + i + " ";
+                        boolButtons[i] = true;
+                        info += boolButtons[i];
                     }
+                    else
+                        boolButtons[i] = false;
                 }
 
                 textBlock1.Text = j.ToString();
@@ -167,22 +182,8 @@ namespace WheelWpf
                     {
                         //System.Diagnostics.Process.GetCurrentProcess().Kill();
                     }
-                   
+                    SendInfoToPlc(boolButtons, Convert.ToInt16(j.X), Convert.ToInt16(j.Y), Convert.ToInt16(j.Z), Convert.ToInt16(j.Rz));
 
-                    var writeBuffer = new byte[11];
-
-                    S7.SetBitAt(ref writeBuffer, 0,0, WheelsEn);
-                    S7.SetBitAt(ref writeBuffer, 0,1, Wheel1Dir);
-                    S7.SetBitAt(ref writeBuffer, 0,2, Wheel2Dir);
-                    S7.SetBitAt(ref writeBuffer, 0,3, Wheel3Dir);
-                    S7.SetBitAt(ref writeBuffer, 0,4, Wheel4Dir);
-                    S7.SetIntAt(writeBuffer, 2, Wheel1Speed);
-                    S7.SetIntAt(writeBuffer, 4, Wheel2Speed);
-                    S7.SetIntAt(writeBuffer, 6, Wheel3Speed);
-                    S7.SetIntAt(writeBuffer, 8, Wheel4Speed);
-                    S7.SetBitAt(ref writeBuffer, 10, 0, OutputLifeBit);
-                    client.DBWrite(15211, 0, writeBuffer.Length, writeBuffer);
-                    //client.Disconnect();
                 }
             }
             catch (NullReferenceException)
@@ -190,28 +191,60 @@ namespace WheelWpf
                 label1.Foreground = Brushes.Red;
                 label1.FontWeight = FontWeights.UltraBold;
                 label1.Content = "Joystick not found! Please check the connection and restart this programm.";
-                //client.Disconnect();
+                client.Disconnect();
                 //System.Diagnostics.Process.GetCurrentProcess().Kill();
                 //throw new NullReferenceException("Joystick not found! Please check the connection and try again.");
             }
         }
         private void CheckConnection()
-        {           
-            connectionResult = client.ConnectTo(PlcIp, PlcRack, PlcSlot);
-            if (connectionResult == 0)
-            {
-                textBlock4.FontWeight = FontWeights.UltraBold;
-                textBlock4.Foreground = Brushes.Green;
-                textBlock4.Text = "PLC CONNECTED";
-            }
-            else
-            {
-                textBlock4.FontWeight = FontWeights.UltraBold;
-                textBlock4.Foreground = Brushes.Red;
-                textBlock4.Text = "PLC NOT FOUND Restart required!!!";
-            }
+        {
+            
+                connectionResult = client.ConnectTo(PlcIp, PlcRack, PlcSlot);
+                if (connectionResult == 0)
+                {
+                    textBlock4.FontWeight = FontWeights.UltraBold;
+                    textBlock4.Foreground = Brushes.Green;
+                    textBlock4.Text = "PLC CONNECTED";
+                }
+                else
+                {
+                    textBlock4.FontWeight = FontWeights.UltraBold;
+                    textBlock4.Foreground = Brushes.Red;
+                    textBlock4.Text = "PLC NOT FOUND";
+                }
+            
+            
         }
-
+        private void SendInfoToPlc(bool[] buttons,short Xaxis, short Yaxis, short Zaxis, short Rzaxis)
+        {
+            var writeBuffer = new byte[22];           
+            S7.SetBitAt(ref writeBuffer, 0, 0, WheelsEn);
+            S7.SetBitAt(ref writeBuffer, 0, 1, Wheel1Dir);
+            S7.SetBitAt(ref writeBuffer, 0, 2, Wheel2Dir);
+            S7.SetBitAt(ref writeBuffer, 0, 3, Wheel3Dir);
+            S7.SetBitAt(ref writeBuffer, 0, 4, Wheel4Dir);
+            S7.SetIntAt(writeBuffer, 2, Wheel1Speed);
+            S7.SetIntAt(writeBuffer, 4, Wheel2Speed);
+            S7.SetIntAt(writeBuffer, 6, Wheel3Speed);
+            S7.SetIntAt(writeBuffer, 8, Wheel4Speed);
+            S7.SetBitAt(ref writeBuffer, 10, 0, OutputLifeBit);
+            S7.SetIntAt(writeBuffer, 12, Xaxis);
+            S7.SetIntAt(writeBuffer, 14, Yaxis);
+            S7.SetIntAt(writeBuffer, 16, Zaxis);
+            S7.SetIntAt(writeBuffer, 18, Rzaxis);
+            S7.SetBitAt(ref writeBuffer, 20, 0, boolButtons[0]);
+            S7.SetBitAt(ref writeBuffer, 20, 1, boolButtons[1]);
+            S7.SetBitAt(ref writeBuffer, 20, 2, boolButtons[2]);
+            S7.SetBitAt(ref writeBuffer, 20, 3, boolButtons[3]);
+            S7.SetBitAt(ref writeBuffer, 20, 4, boolButtons[4]);
+            S7.SetBitAt(ref writeBuffer, 20, 5, boolButtons[5]);
+            S7.SetBitAt(ref writeBuffer, 20, 6, boolButtons[6]);
+            S7.SetBitAt(ref writeBuffer, 20, 7, boolButtons[7]);
+            S7.SetBitAt(ref writeBuffer, 21, 0, boolButtons[8]);
+            S7.SetBitAt(ref writeBuffer, 21, 1, boolButtons[9]);
+            S7.SetBitAt(ref writeBuffer, 21, 2, boolButtons[10]);
+            client.DBWrite(15211, 0, writeBuffer.Length, writeBuffer);
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             RefreshConnectionData();
@@ -255,10 +288,10 @@ namespace WheelWpf
             {
                 WheelsEn = true;
 
-                Wheel1Dir = true;
-                Wheel2Dir = false;
-                Wheel3Dir = true;
-                Wheel4Dir = false;
+                Wheel1Dir = false;
+                Wheel2Dir = true;
+                Wheel3Dir = false;
+                Wheel4Dir = true;
 
                 Wheel1Speed = Convert.ToInt16(100 - velocityCoef);
                 Wheel2Speed = Convert.ToInt16(100 - velocityCoef);
@@ -270,11 +303,11 @@ namespace WheelWpf
             if(Reversal >= 70)
             {
                 WheelsEn = true;
-
-                Wheel1Dir = false;
-                Wheel2Dir = true;
-                Wheel3Dir = false;
-                Wheel4Dir = true;
+ 
+                Wheel1Dir = true;
+                Wheel2Dir = false;
+                Wheel3Dir = true;
+                Wheel4Dir = false;
 
                 Wheel1Speed = Convert.ToInt16(100 - velocityCoef);
                 Wheel2Speed = Convert.ToInt16(100 - velocityCoef);
@@ -327,7 +360,21 @@ namespace WheelWpf
                     Wheel3Speed = 0;
                     Wheel4Speed = 0;
                 }
-                if(LeftRight <= 35)      //olny left
+                if(LeftRight >= 65)      //olny left
+                {
+                    WheelsEn = true;
+
+                    Wheel1Dir = false;
+                    Wheel2Dir = false;
+                    Wheel3Dir = true;
+                    Wheel4Dir = true;
+
+                    Wheel1Speed = Convert.ToInt16(((100 - velocityCoef) * (LeftRight - 60)) / 40);
+                    Wheel2Speed = Convert.ToInt16(((100 - velocityCoef) * (LeftRight - 60)) / 40);
+                    Wheel3Speed = Convert.ToInt16(((100 - velocityCoef) * (LeftRight - 60)) / 40);
+                    Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (LeftRight - 60)) / 40);    
+                }
+                if(LeftRight <= 35)    //only right
                 {
                     WheelsEn = true;
 
@@ -340,20 +387,6 @@ namespace WheelWpf
                     Wheel2Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - LeftRight)) / 40);
                     Wheel3Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - LeftRight)) / 40);
                     Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (40 - LeftRight)) / 40);
-                }
-                if(LeftRight >= 65)    //only right
-                {
-                    WheelsEn = true;
-
-                    Wheel1Dir = false;
-                    Wheel2Dir = false;
-                    Wheel3Dir = true;
-                    Wheel4Dir = true;
-                    
-                    Wheel1Speed = Convert.ToInt16(((100 - velocityCoef) * (LeftRight - 60)) / 40);
-                    Wheel2Speed = Convert.ToInt16(((100 - velocityCoef) * (LeftRight - 60)) / 40);
-                    Wheel3Speed = Convert.ToInt16(((100 - velocityCoef) * (LeftRight - 60)) / 40);
-                    Wheel4Speed = Convert.ToInt16(((100 - velocityCoef) * (LeftRight - 60)) / 40);
                 }
             }
 
@@ -399,11 +432,10 @@ namespace WheelWpf
             PlcIp = ReadFromFile("Ip");
             PlcRack = Convert.ToInt32(ReadFromFile("Rack"));
             PlcSlot = Convert.ToInt32(ReadFromFile("Slot"));
-
         }
-        // 1 -Ip adrr
-        // 2 - Rack
-        // 3 - Slot
+
+
+        // file - Ip,Rack,Slot
         private void WriteToFile(string text,string file)
         {
             
@@ -438,6 +470,11 @@ namespace WheelWpf
             {                      
                 throw new Exception(e.Message);
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(@"..\..\..\..\AForge.Wpf.IpCamera\bin\Release\AForge.Wpf.IpCamera.exe");
         }
     }
 }
